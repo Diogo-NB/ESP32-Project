@@ -1,11 +1,9 @@
 import { Db, MongoClient, ServerApiVersion } from "mongodb";
 
-const _mongodbUrl = "mongodb+srv://esp32-app:6X7OytyV3FRBqii0@dn-cluster.2wx04ik.mongodb.net/?retryWrites=true&w=majority&appName=DN-Cluster";
-
 let _db: Db;
 
 export async function connectMongoDB() {
-  console.log(_mongodbUrl);
+  const _mongodbUrl = process.env.MONGODB_URL ?? "";
   // Connect the client to the server	(optional starting in v4.7)
   const client = await MongoClient.connect(_mongodbUrl, {
     serverApi: {
