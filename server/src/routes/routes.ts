@@ -7,7 +7,8 @@ export const router = express.Router();
 
 // Route to get a new distance measured to be saved
 router.post('/add-measurement', (req, res, _next) => {
-    const measurement = new Measurement(req.body.distance as number);
+    const distance : number = req.body.distance;
+    const measurement = new Measurement(+distance);
     measurement.save();
     res.send('Data received');
 });

@@ -1,8 +1,11 @@
-import { MongoClient, ServerApiVersion } from "mongodb";
+import { Db, MongoClient, ServerApiVersion } from "mongodb";
 
-const _mongodbUrl = process.env.MONGODB_URL ?? "";
+const _mongodbUrl = "mongodb+srv://esp32-app:6X7OytyV3FRBqii0@dn-cluster.2wx04ik.mongodb.net/?retryWrites=true&w=majority&appName=DN-Cluster";
+
+let _db: Db;
 
 export async function connectMongoDB() {
+  console.log(_mongodbUrl);
   // Connect the client to the server	(optional starting in v4.7)
   const client = await MongoClient.connect(_mongodbUrl, {
     serverApi: {
@@ -12,6 +15,12 @@ export async function connectMongoDB() {
     },
   });
   // Send a ping to confirm a successful connection
-  await client.db("esp32").command({ ping: 1 });
-  console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  _db = client.db("esp32");
+}
+
+export function getDb() {
+  if (!_db) {
+    throw new Error("Database not connected!");
+  }
+  return _db;
 }
