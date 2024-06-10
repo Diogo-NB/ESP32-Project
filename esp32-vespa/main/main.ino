@@ -7,6 +7,8 @@
 
 #include <Arduino.h>
 
+
+
 /* --- Wifi & HTTP Client --- */
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -27,6 +29,11 @@ const int echoPin = 23;
 
 //define sound speed in cm/uS
 #define SOUND_SPEED 0.034
+
+/* --- LEDS --- */
+const int redLedPin = 5;
+const int yellowLedPin = 18;
+const int greenLedPin = 21;
 
 // Returns the distance read in cm
 double readSR() {
@@ -61,6 +68,14 @@ void setup() {
   pinMode(trigPin, OUTPUT);  // Sets the trigPin as an Output
   pinMode(echoPin, INPUT);   // Sets the echoPin as an Input
 
+  pinMode(redLedPin, OUTPUT);
+  pinMode(yellowLedPin, OUTPUT);
+  pinMode(greenLedPin, OUTPUT);
+
+  digitalWrite(redLedPin, LOW);     // turn off the red LED
+  digitalWrite(yellowLedPin, LOW);  // turn off the yellow LED
+  digitalWrite(greenLedPin, LOW);   // turn off the green LED
+
   wifiMulti.addAP(STASSID, STAPSK);
 
   // allow reuse (if server supports it)
@@ -69,10 +84,32 @@ void setup() {
 
 void loop() {
 
+  double distance = readSR();  // Get distance in cm from the HC-SR04
+
+  // 0 <= D < 10, red
+  // 10 <= D < 30, yellow
+  // 30 <= D, green
+
+  if (distance >= 30.0) {
+    digitalWrite(greenLedPin, HIGH);
+
+    digitalWrite(redLedPin, LOW);
+    digitalWrite(yellowLedPin, LOW);
+  } else if (distance >= 10.0) {
+    digitalWrite(yellowLedPin, HIGH);
+
+    digitalWrite(greenLedPin, LOW);
+    digitalWrite(redLedPin, LOW);
+  } else {
+    digitalWrite(redLedPin, HIGH);
+
+    digitalWrite(yellowLedPin, LOW);
+    digitalWrite(greenLedPin, LOW);
+  }
+
   Serial.println("Waiting for wifi connection ...");
   // wait for WiFi connection
   if (wifiMulti.run() == WL_CONNECTED) {
-    double distance = readSR();  // Get distance in cm from the HC-SR04
 
     String jsonData = "{\"distance\": " + String(distance) + "}";  // Create JSON with distance
     Serial.println(jsonData);
@@ -100,5 +137,5 @@ void loop() {
     http.end();
   }
 
-  delay(1500);
+  delay(1000);
 }
