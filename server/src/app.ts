@@ -4,10 +4,14 @@ import bodyParser from "body-parser";
 import { router as routes } from "./routes/routes";
 import { router as testRoutes } from "./routes/test";
 
+import path from "path";
+
 import dotenv from "dotenv";
-dotenv.config();
 
 import { connectMongoDB } from "./util/database";
+import rootDir from "./util/path";
+
+dotenv.config({ path: path.resolve(rootDir, "../.env") });
 
 const app = express();
 

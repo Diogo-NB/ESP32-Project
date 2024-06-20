@@ -12,8 +12,9 @@ export async function connectMongoDB() {
       deprecationErrors: true,
     },
   });
-  // Send a ping to confirm a successful connection
+  
   _db = client.db("esp32");
+  console.log("Connection to MongoDB established");
 }
 
 export function getDb() {
