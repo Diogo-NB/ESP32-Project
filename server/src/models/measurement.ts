@@ -17,4 +17,13 @@ export default class Measurement {
       console.error(error);
     }
   }
+
+  static async fetchAll() {
+    try {
+      return getDb().collection("water-level").findOne();
+    } catch (error) {
+      console.log("Error fetching measurements ...");
+      console.error(error);
+    }
+  }
 }
