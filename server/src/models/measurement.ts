@@ -36,6 +36,11 @@ export default class Measurement {
       .find()
       .sort({ timeStamp: -1 })
       .map(Measurement.fromJson)
-      .toArray()
+      .toArray();
   }
+
+  static async removeAll() {
+    return getDb().collection("water-level").deleteMany({});
+  }
+
 }

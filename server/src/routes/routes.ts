@@ -23,9 +23,15 @@ router.get("/", (_req, res, _next) => {
   res.redirect("/add-measurement");
 });
 
+router.get("/remove-all", (_req, res, _next) => {
+  Measurement.removeAll().then(() => {
+    res.send("All data removed");
+  });
+});
+
 router.get("/last-measurement", (_req, res, _next) => {
-    Measurement.fetchLast().then((measurement) => {
-        console.log(measurement[0]);
-        res.send(measurement[0]);
-    });
+  Measurement.fetchLast().then((measurement) => {
+    console.log(measurement[0]);
+    res.send(measurement[0]);
+  });
 });
