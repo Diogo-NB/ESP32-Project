@@ -116,7 +116,8 @@
       setInterval(() => {
         fetchData().then((data) => {
           time += 1; // Incrementa o tempo em segundos
-          const volume = data.distance;
+          const lastMeasurement = data ?? { distance: 0 };
+          const volume = lastMeasurement.distance;
 
           // Adiciona novos dados ao gráfico
           addData(myChart, time.toString(), volume);
