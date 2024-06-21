@@ -1,130 +1,132 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Centralizar Texto e Div</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Medidor nível de água</title>
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-        }
-        .container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-        }
-        .center-div {
-            width: 80%;
-            height: 80%;
-            background-color: lightblue;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .center-text {
-            text-align: center;
-        }
+      body,
+      html {
+        height: 100%;
+        margin: 0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+      }
+      .center-div {
+        width: 80%;
+        height: 80%;
+        background-color: lightblue;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .center-text {
+        text-align: center;
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="container">
-        <h1 class="center-text">Medidor de nível</h1>
-        <div class="center-div">
-            <canvas id="myChart"></canvas>
-        </div>
+      <h1 class="center-text">Medidor de nível</h1>
+      <div class="center-div">
+        <canvas id="myChart"></canvas>
+      </div>
     </div>
-      
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-
-    
     <script>
-        const ctx = document.getElementById('myChart').getContext('2d');
+      const ctx = document.getElementById("myChart").getContext("2d");
 
-        // Dados iniciais do gráfico
-        const data = {
-            labels: ['0'], // Eixo X: Tempo em minutos
-            datasets: [{
-                label: 'Volume',
-                data: [0], // Eixo Y: Volume inicial
-                borderColor: 'rgba(75, 192, 192, 1)',
-                backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                fill: false,
-                tension: 0.1
-            }]
-        };
+      // Dados iniciais do gráfico
+      const data = {
+        labels: ["0"], // Eixo X: Tempo em minutos
+        datasets: [
+          {
+            label: "Volume",
+            data: [0], // Eixo Y: Volume inicial
+            borderColor: "rgba(75, 192, 192, 1)",
+            backgroundColor: "rgba(75, 192, 192, 0.2)",
+            fill: false,
+            tension: 0.1,
+          },
+        ],
+      };
 
-        // Configuração do gráfico
-        const config = {
-            type: 'line',
-            data: data,
-            options: {
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Tempo (segundos)'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Volume (mL)'
-                        }
-                    }
-                }
-            }
-        };
+      // Configuração do gráfico
+      const config = {
+        type: "line",
+        data: data,
+        options: {
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: "Tempo (segundos)",
+              },
+            },
+            y: {
+              title: {
+                display: true,
+                text: "Volume (mL)",
+              },
+            },
+          },
+        },
+      };
 
-        // Renderizando o gráfico
-        const myChart = new Chart(ctx, config);
+      // Renderizando o gráfico
+      const myChart = new Chart(ctx, config);
 
-        // Função para adicionar novos dados ao gráfico
-        function addData(chart, label, data) {
-            chart.data.labels.push(label);
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data.push(data);
-            });
-            chart.update();
+      // Função para adicionar novos dados ao gráfico
+      function addData(chart, label, data) {
+        chart.data.labels.push(label);
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data.push(data);
+        });
+        chart.update();
+      }
+
+      // Função para remover o primeiro ponto de dados quando atingirmos um certo tamanho
+      function removeData(chart) {
+        chart.data.labels.shift();
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data.shift();
+        });
+      }
+
+      async function fetchData() {
+        try {
+          const response = await fetch(
+            "http://localhost:3000/last-measurement"
+          );
+          return await response.json();
+        } catch (error) {
+          console.error("Error fetching data:", error);
         }
+      }
 
-        // Função para remover o primeiro ponto de dados quando atingirmos um certo tamanho
-        function removeData(chart) {
-            chart.data.labels.shift();
-            chart.data.datasets.forEach((dataset) => {
-                dataset.data.shift();
-            });
-        }
+      // Simulando dados dinâmicos
+      let time = 0;
+      setInterval(() => {
+        fetchData().then((data) => {
+          time += 1; // Incrementa o tempo em segundos
+          const volume = data.distance;
 
-        async function fetchData() {
-            try {
-                const response = await fetch('http://localhost:3000/last-measurement');
-                const data = await response.json();
-                document.getElementById('data').textContent = data.message;
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
+          // Adiciona novos dados ao gráfico
+          addData(myChart, time.toString(), volume);
 
-        // Simulando dados dinâmicos
-        let time = 0;
-        setInterval(() => {
-            fetchData();
-            time += 1; // Incrementa o tempo em segundos
-            const volume = Math.floor(Math.random() * 100); // Simula um volume aleatório
-
-            // Adiciona novos dados ao gráfico
-            addData(myChart, time.toString(), volume);
-
-            // Remove o primeiro ponto de dados se tivermos mais de 60 pontos para manter o gráfico dinâmico
-            if (myChart.data.labels.length > 45) {
-                removeData(myChart);
-            }
-        }, 1000); // Atualiza a cada segundo
-        
+          // Remove o primeiro ponto de dados se tivermos mais de 60 pontos para manter o gráfico dinâmico
+          if (myChart.data.labels.length > 45) {
+            removeData(myChart);
+          }
+        });
+      }, 1000); // Atualiza a cada segundo
     </script>
-</body>
+  </body>
 </html>

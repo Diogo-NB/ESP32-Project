@@ -11,9 +11,13 @@ import dotenv from "dotenv";
 import { connectMongoDB } from "./util/database";
 import rootDir from "./util/path";
 
+import cors from "cors";
+
 dotenv.config({ path: path.resolve(rootDir, "../.env") });
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
