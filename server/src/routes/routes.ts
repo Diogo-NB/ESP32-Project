@@ -24,7 +24,8 @@ router.get("/", (_req, res, _next) => {
 });
 
 router.get("/last-measurement", (_req, res, _next) => {
-    Measurement.fetchAll().then((measurements) => {
-        res.send(measurements);
+    Measurement.fetchLast().then((measurement) => {
+        console.log(measurement[0]);
+        res.send(measurement[0]);
     });
 });
