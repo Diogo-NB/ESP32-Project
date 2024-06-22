@@ -50,8 +50,7 @@ void loop() {
 
   double distance = readSR();  // Get distance in cm from the HC-SR04
 
-  String jsonData = "{\"distance\": " + String(distance) + "}";  // Create JSON with distance
-  Serial.println(jsonData);
+  Serial.println("Distance: " + + String(distance) + "cm");
 
-  delay(800);
+  delay(500);
 }
