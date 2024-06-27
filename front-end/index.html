@@ -123,7 +123,7 @@
           addData(myChart, '', volume);
 
           // Remove o primeiro ponto de dados se tivermos mais de 60 pontos para manter o gráfico dinâmico
-          if (myChart.data.labels.length > 30) {
+          if (myChart.data.labels.length > 120) {
             removeData(myChart);
           }
         });
