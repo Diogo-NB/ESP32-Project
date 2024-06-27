@@ -12,9 +12,9 @@
 #include <WiFiMulti.h>
 #include <HTTPClient.h>
 
-#define STASSID "WIFI_SSID"
-#define STAPSK "WIFI_PSWRD"
-#define HOST "SERVER_IP"
+#define STASSID "Machado"
+#define STAPSK "senha132"
+#define HOST "192.168.100.12"
 #define PORT 3000
 
 WiFiMulti wifiMulti;
