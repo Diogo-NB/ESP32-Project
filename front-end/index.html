@@ -45,7 +45,7 @@
 
       // Dados iniciais do gráfico
       const data = {
-        labels: ["0"], // Eixo X: Tempo em minutos
+        // labels: ["0"], // Eixo X: Tempo em minutos
         datasets: [
           {
             label: "Volume",
@@ -120,10 +120,10 @@
           const volume = lastMeasurement.distance;
 
           // Adiciona novos dados ao gráfico
-          addData(myChart, time.toString(), volume);
+          addData(myChart, '', volume);
 
           // Remove o primeiro ponto de dados se tivermos mais de 60 pontos para manter o gráfico dinâmico
-          if (myChart.data.labels.length > 45) {
+          if (myChart.data.labels.length > 30) {
             removeData(myChart);
           }
         });
