@@ -7,8 +7,6 @@
 
 #include <Arduino.h>
 
-
-
 /* --- Wifi & HTTP Client --- */
 #include <WiFi.h>
 #include <WiFiMulti.h>
@@ -34,6 +32,20 @@ const int echoPin = 23;
 const int redLedPin = 5;
 const int yellowLedPin = 18;
 const int greenLedPin = 21;
+
+// Coeficientes para cálculo do volume (polinômio de segundo grau)
+const double A = 1.99;
+const double B = -104.11;
+const double C = 1274.84;
+
+// Calculates the volume based on the height (distance) using the trend equation
+double calculateVolume(double height) {
+  double volume = A * height * height + B * height + C;
+  if (volume < 0) {
+    volume = 0; // Ensure volume is not negative
+  }
+  return volume;
+}
 
 // Returns the distance read in cm
 double readSR() {
@@ -62,7 +74,7 @@ void setup() {
   for (uint8_t t = 4; t > 0; t--) {
     Serial.printf("[SETUP] WAIT %d...\n", t);
     Serial.flush();
-    delay(1000);
+    delay(500);
   }
 
   pinMode(trigPin, OUTPUT);  // Sets the trigPin as an Output
@@ -85,33 +97,33 @@ void setup() {
 void loop() {
 
   double distance = readSR();  // Get distance in cm from the HC-SR04
-
+  double volume = calculateVolume(distance);
   // 0 <= D < 10, red
   // 10 <= D < 30, yellow
   // 30 <= D, green
 
-  if (distance >= 30.0) {
-    digitalWrite(greenLedPin, HIGH);
+  if (volume >= 800.0 || volume <= 100.0) {
+    digitalWrite(redLedPin, HIGH);
 
-    digitalWrite(redLedPin, LOW);
+    digitalWrite(greenLedPin, LOW);
     digitalWrite(yellowLedPin, LOW);
-  } else if (distance >= 10.0) {
+  } else if (volume >= 600.0 || volume <= 300.0) {
     digitalWrite(yellowLedPin, HIGH);
 
     digitalWrite(greenLedPin, LOW);
     digitalWrite(redLedPin, LOW);
   } else {
-    digitalWrite(redLedPin, HIGH);
+    digitalWrite(greenLedPin, HIGH);
 
     digitalWrite(yellowLedPin, LOW);
-    digitalWrite(greenLedPin, LOW);
+    digitalWrite(redLedPin, LOW);
   }
 
   Serial.println("Waiting for wifi connection ...");
   // wait for WiFi connection
   if (wifiMulti.run() == WL_CONNECTED) {
 
-    String jsonData = "{\"distance\": " + String(distance) + "}";  // Create JSON with distance
+    String jsonData = "{\"distance\": " + String(volume) + "}";  // Create JSON with distance
     Serial.println(jsonData);
 
     // http.begin() declaration: bool begin(String host, uint16_t port, String uri = "/");
